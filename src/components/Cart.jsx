@@ -9,22 +9,21 @@ const Cart = ({ isOpen, onClose }) => {
   const [cart, setCart] = useRecoilState(cartState);
   const total = useRecoilValue(cartTotalSelector);
 
-  const updateQuantity = (id, newQuantity) => {
+  const updateQuantity = (_id, newQuantity) => {
     if (newQuantity === 0) {
-      removeFromCart(id);
+      removeFromCart(_id);
       return;
     }
-    
-    setCart(cart.map(item => 
-      item.id === id 
+    setCart(cart.map(item =>
+      item._id === _id
         ? { ...item, quantity: newQuantity }
         : item
     ));
   };
 
-  const removeFromCart = (id) => {
-    const item = cart.find(item => item.id === id);
-    setCart(cart.filter(item => item.id !== id));
+  const removeFromCart = (_id) => {
+    const item = cart.find(item => item._id === _id);
+    setCart(cart.filter(item => item._id !== _id));
     toast.success(`${item.name} removed from cart`);
   };
 
@@ -90,7 +89,7 @@ const Cart = ({ isOpen, onClose }) => {
                   <AnimatePresence>
                     {cart.map((item, index) => (
                       <motion.div
-                        key={item.id}
+                        key={item._id}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
@@ -102,7 +101,7 @@ const Cart = ({ isOpen, onClose }) => {
                           alt={item.name}
                           className="w-16 h-16 object-cover rounded-lg"
                         />
-                        
+
                         <div className="flex-1 min-w-0">
                           <h3 className="font-medium text-card-foreground truncate">
                             {item.name}
@@ -117,29 +116,27 @@ const Cart = ({ isOpen, onClose }) => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity - 1)}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          
-                          <span className="w-8 text-center font-medium">
-                            {item.quantity}
-                          </span>
-                          
+
+                          <span className="w-8 text-center font-medium">{item.quantity}</span>
+
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
-                          
+
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive hover:text-destructive"
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromCart(item._id)}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -153,33 +150,19 @@ const Cart = ({ isOpen, onClose }) => {
 
             {/* Footer */}
             {cart.length > 0 && (
-              <motion.div
-                initial={{ y: 100 }}
-                animate={{ y: 0 }}
-                className="border-t border-border p-6 bg-card"
-              >
+              <motion.div initial={{ y: 100 }} animate={{ y: 0 }} className="border-t border-border p-6 bg-card">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-lg font-semibold">
                     <span>Total:</span>
                     <span className="text-primary">${total.toFixed(2)}</span>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Button
-                      variant="hero"
-                      size="lg"
-                      className="w-full"
-                      onClick={checkout}
-                    >
+                    <Button variant="hero" size="lg" className="w-full" onClick={checkout}>
                       Checkout
                     </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-muted-foreground"
-                      onClick={clearCart}
-                    >
+
+                    <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={clearCart}>
                       Clear Cart
                     </Button>
                   </div>
